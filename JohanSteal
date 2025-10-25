@@ -1,1 +1,286 @@
+-- LocalScript: InfernoPanel.lua
+-- Colocar en StarterPlayerScripts o StarterGui (LocalScript)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
+local localPlayer = Players.LocalPlayer
+local playerGui = localPlayer:WaitForChild("PlayerGui")
+
+-- ---------- Crear GUI ----------
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "InfernoPanelUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 360, 0, 200)
+mainFrame.Position = UDim2.new(0, 16, 0, 16)
+mainFrame.BackgroundColor3 = Color3.fromRGB(28,28,28)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner", mainFrame)
+uiCorner.CornerRadius = UDim.new(0, 8)
+
+-- 🔥 Título personalizado
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 28)
+title.Position = UDim2.new(0, 10, 0, 8)
+title.BackgroundTransparency = 1
+title.Text = "INFERNO PANEL"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(255, 0, 0) -- 🔴 Rojo
+title.Parent = mainFrame
+
+-- Input para nombre
+local nameBox = Instance.new("TextBox")
+nameBox.Size = UDim2.new(1, -140, 0, 28)
+nameBox.Position = UDim2.new(0, 10, 0, 44)
+nameBox.PlaceholderText = "Escribe nombre o DisplayName"
+nameBox.Font = Enum.Font.Gotham
+nameBox.TextSize = 14
+nameBox.TextColor3 = Color3.fromRGB(30,30,30)
+nameBox.BackgroundColor3 = Color3.fromRGB(240,240,240)
+nameBox.Parent = mainFrame
+local nameCorner = Instance.new("UICorner", nameBox)
+nameCorner.CornerRadius = UDim.new(0,6)
+
+local inspectBtn = Instance.new("TextButton")
+inspectBtn.Size = UDim2.new(0, 110, 0, 28)
+inspectBtn.Position = UDim2.new(1, -120, 0, 44)
+inspectBtn.Text = "Inspeccionar"
+inspectBtn.Font = Enum.Font.GothamSemibold
+inspectBtn.TextSize = 14
+inspectBtn.BackgroundColor3 = Color3.fromRGB(70,130,180)
+inspectBtn.TextColor3 = Color3.fromRGB(255,255,255)
+inspectBtn.Parent = mainFrame
+local btnCorner = Instance.new("UICorner", inspectBtn)
+btnCorner.CornerRadius = UDim.new(0,6)
+
+-- Labels de información
+local leftY = 80
+local function makeLabel(text)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.6, -20, 0, 20)
+    lbl.Position = UDim2.new(0, 10, 0, leftY)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = text .. ": -"
+    lbl.Font = Enum.Font.Gotham
+    lbl.TextSize = 14
+    lbl.TextColor3 = Color3.fromRGB(230,230,230)
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = mainFrame
+    leftY = leftY + 22
+    return lbl
+end
+
+local nameLabel = makeLabel("Name")
+local displayLabel = makeLabel("DisplayName")
+local teamLabel = makeLabel("Team")
+local healthLabel = makeLabel("Salud")
+
+-- Recuadro de color
+local colorLabel = Instance.new("TextLabel")
+colorLabel.Size = UDim2.new(0, 72, 0, 72)
+colorLabel.Position = UDim2.new(1, -86, 0, 80)
+colorLabel.BackgroundColor3 = Color3.fromRGB(100,100,100)
+colorLabel.Text = ""
+colorLabel.Parent = mainFrame
+local colorCorner = Instance.new("UICorner", colorLabel)
+colorCorner.CornerRadius = UDim.new(0,8)
+
+-- Mostrar color HEX
+local colorHexLabel = Instance.new("TextLabel")
+colorHexLabel.Size = UDim2.new(0, 72, 0, 20)
+colorHexLabel.Position = UDim2.new(1, -86, 0, 154)
+colorHexLabel.BackgroundTransparency = 1
+colorHexLabel.Font = Enum.Font.Gotham
+colorHexLabel.TextSize = 12
+colorHexLabel.TextColor3 = Color3.fromRGB(230,230,230)
+colorHexLabel.Text = ""
+colorHexLabel.Parent = mainFrame
+
+-- Miniatura
+local thumb = Instance.new("ImageLabel")
+thumb.Size = UDim2.new(0, 64, 0, 64)
+thumb.Position = UDim2.new(1, -164, 0, 80)
+thumb.BackgroundColor3 = Color3.fromRGB(60,60,60)
+thumb.Image = ""
+thumb.Parent = mainFrame
+local thumbCorner = Instance.new("UICorner", thumb)
+thumbCorner.CornerRadius = UDim.new(0,6)
+
+-- Botones de Spectate
+local spectateBtn = Instance.new("TextButton")
+spectateBtn.Size = UDim2.new(0, 70, 0, 28)
+spectateBtn.Position = UDim2.new(1, -120, 1, -44)
+spectateBtn.Text = "Spectate"
+spectateBtn.Font = Enum.Font.Gotham
+spectateBtn.TextSize = 14
+spectateBtn.BackgroundColor3 = Color3.fromRGB(90,160,90)
+spectateBtn.TextColor3 = Color3.fromRGB(255,255,255)
+spectateBtn.Parent = mainFrame
+local spectCorner = Instance.new("UICorner", spectateBtn)
+spectCorner.CornerRadius = UDim.new(0,6)
+
+local stopBtn = Instance.new("TextButton")
+stopBtn.Size = UDim2.new(0, 100, 0, 28)
+stopBtn.Position = UDim2.new(1, -220, 1, -44)
+stopBtn.Text = "Dejar Spectate"
+stopBtn.Font = Enum.Font.Gotham
+stopBtn.TextSize = 14
+stopBtn.BackgroundColor3 = Color3.fromRGB(180,70,70)
+stopBtn.TextColor3 = Color3.fromRGB(255,255,255)
+stopBtn.Parent = mainFrame
+local stopCorner = Instance.new("UICorner", stopBtn)
+stopCorner.CornerRadius = UDim.new(0,6)
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, -20, 0, 18)
+status.Position = UDim2.new(0, 10, 1, -24)
+status.BackgroundTransparency = 1
+status.Font = Enum.Font.Gotham
+status.TextSize = 12
+status.TextColor3 = Color3.fromRGB(200,200,200)
+status.Text = "Listo"
+status.Parent = mainFrame
+
+-- ---------- Funciones ----------
+local function findPlayerByName(name)
+    if not name or name == "" then return nil end
+    name = name:lower()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Name:lower() == name or (p.DisplayName and p.DisplayName:lower() == name) then
+            return p
+        end
+    end
+    return nil
+end
+
+local function getCharacterRepresentativeColor(character)
+    if not character then return Color3.fromRGB(120,120,120) end
+    local parts = {"UpperTorso","Torso","Head","HumanoidRootPart"}
+    for _, partName in ipairs(parts) do
+        local part = character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") then
+            return part.Color
+        end
+    end
+    for _, obj in ipairs(character:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            return obj.Color
+        end
+    end
+    return Color3.fromRGB(120,120,120)
+end
+
+local function getUserThumbnailAsync(userId)
+    local ok, thumbUrl = pcall(function()
+        return Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+    end)
+    if ok and thumbUrl then
+        return thumbUrl
+    end
+    return nil
+end
+
+local currentTarget = nil
+local healthConn = nil
+
+local function inspectPlayer(target)
+    if not target then
+        nameLabel.Text = "Name: -"
+        displayLabel.Text = "DisplayName: -"
+        teamLabel.Text = "Team: -"
+        healthLabel.Text = "Salud: -"
+        colorLabel.BackgroundColor3 = Color3.fromRGB(100,100,100)
+        colorHexLabel.Text = ""
+        thumb.Image = ""
+        status.Text = "Jugador no encontrado."
+        return
+    end
+
+    nameLabel.Text = "Name: " .. target.Name
+    displayLabel.Text = "DisplayName: " .. target.DisplayName
+    teamLabel.Text = "Team: " .. (target.Team and target.Team.Name or "Ninguno")
+
+    local char = target.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        healthLabel.Text = string.format("Salud: %d / %d", math.floor(hum.Health), math.floor(hum.MaxHealth))
+    else
+        healthLabel.Text = "Salud: (sin personaje)"
+    end
+
+    local color = getCharacterRepresentativeColor(char)
+    colorLabel.BackgroundColor3 = color
+
+    local r = math.floor(color.R * 255 + 0.5)
+    local g = math.floor(color.G * 255 + 0.5)
+    local b = math.floor(color.B * 255 + 0.5)
+    colorHexLabel.Text = string.format("#%02X%02X%02X", r, g, b)
+
+    local thumbUrl = getUserThumbnailAsync(target.UserId)
+    thumb.Image = thumbUrl or ""
+
+    status.Text = "Inspección completada."
+end
+
+-- ---------- Spectate ----------
+local Camera = workspace.CurrentCamera
+local previousSubject
+local previousType
+local spectating = false
+
+local function startSpectate(target)
+    if not target or not target.Character then
+        status.Text = "No se puede spectatear."
+        return
+    end
+    local hum = target.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then
+        status.Text = "Sin Humanoid."
+        return
+    end
+    if not spectating then
+        previousSubject = Camera.CameraSubject
+        previousType = Camera.CameraType
+    end
+    Camera.CameraSubject = hum
+    Camera.CameraType = Enum.CameraType.Custom
+    spectating = true
+    status.Text = "Spectating: " .. target.Name
+end
+
+local function stopSpectate()
+    if not spectating then return end
+    Camera.CameraSubject = previousSubject or Camera.CameraSubject
+    Camera.CameraType = previousType or Camera.CameraType
+    spectating = false
+    status.Text = "Dejó de spectatear."
+end
+
+-- ---------- Conexiones ----------
+inspectBtn.MouseButton1Click:Connect(function()
+    local target = findPlayerByName(nameBox.Text)
+    inspectPlayer(target)
+end)
+
+nameBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local target = findPlayerByName(nameBox.Text)
+        inspectPlayer(target)
+    end
+end)
+
+spectateBtn.MouseButton1Click:Connect(function()
+    local target = findPlayerByName(nameBox.Text)
+    startSpectate(target)
+end)
+
+stopBtn.MouseButton1Click:Connect(stopSpectate)
+
+-- Mensaje inicial
+status.Text = "INFERNO PANEL listo. Escribe un nombre y presiona Inspeccionar."
